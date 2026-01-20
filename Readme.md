@@ -14,7 +14,7 @@ There is no single place to:
 
 ## ✅ Solution
 
-**NoDups** is a collaborative platform that makes open-source and NGO projects **transparent, discoverable, and reusable**.
+**Contribase** is a collaborative platform that makes open-source and NGO projects **transparent, discoverable, and reusable**.
 
 It provides:
 
@@ -22,7 +22,7 @@ It provides:
 * Clear lifecycle stages (Idea → Prototype → Deployment)
 * Reusable modules and resources
 
-By centralizing visibility and encouraging reuse, NoDups prevents duplicate work, saves contributor time, and accelerates innovation for social impact.
+By centralizing visibility and encouraging reuse, Contribase prevents duplicate work, saves contributor time, and accelerates innovation for social impact.
 
 ---
 
