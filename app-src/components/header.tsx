@@ -57,7 +57,7 @@ export default function Header() {
             {theme === 'dark' ? '🌙' : '☀️'}
           </button>
           <Link 
-            href="#"
+            href="/signin"
             className={`px-4 py-2 rounded-lg transition-colors ${
               theme === 'dark'
                 ? 'text-gray-300 hover:text-white hover:bg-gray-800' 
@@ -67,7 +67,7 @@ export default function Header() {
             Sign in
           </Link>
           <Link 
-            href="#"
+            href="/signin"
             className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 ${
               theme === 'dark'
                 ? 'bg-white text-black hover:bg-gray-100'

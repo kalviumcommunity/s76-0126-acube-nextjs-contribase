@@ -29,7 +29,7 @@ export default function Hero() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-fadeInUp" style={{ animationDelay: '0.6s' }}>
           <Link 
-            href="#dashboard"
+            href="/signin"
             className={`group px-8 py-3 rounded-lg font-medium transition-all duration-300 hover:scale-110 hover:shadow-2xl inline-flex items-center justify-center gap-2 animate-bounce ${
               theme === 'dark'
                 ? 'bg-white text-black hover:bg-gray-100 shadow-lg' 
