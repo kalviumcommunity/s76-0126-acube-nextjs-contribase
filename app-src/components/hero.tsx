@@ -60,7 +60,7 @@ export default function Hero() {
           <div className={`text-sm font-medium mb-4 transition-colors ${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
           }`}>
-            contribase.app/dashboard
+            contribase.app
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
