@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from '../contexts/theme-context';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,26 +58,52 @@ export default function Header() {
           >
             {theme === 'dark' ? '🌙' : '☀️'}
           </button>
-          <Link 
-            href="/signin"
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              theme === 'dark'
-                ? 'text-gray-300 hover:text-white hover:bg-gray-800' 
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            Sign in
-          </Link>
-          <Link 
-            href="/signin"
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 ${
-              theme === 'dark'
-                ? 'bg-white text-black hover:bg-gray-100'
-                : 'bg-white text-black hover:bg-gray-100'
-            }`}
-          >
-            Get started
-          </Link>
+
+          {status === 'authenticated' && session?.user ? (
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard" className={`hidden md:inline text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Dashboard
+              </Link>
+              <Link href="/project" className={`hidden md:inline text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Explore
+              </Link>
+
+              <span className={`hidden md:inline text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                {session.user.name}
+              </span>
+
+              <a href={session.user.github?.url ?? '#'} target="_blank" rel="noreferrer" title="View on GitHub" className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-white/10">
+                <img src={session.user.image ?? '/favicon.ico'} alt="avatar" className="w-full h-full object-cover" />
+              </a>
+
+              <button onClick={() => signOut({ callbackUrl: '/signin' })} className="text-sm text-rose-500 hover:underline">
+                Logout
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link 
+                href="/signin"
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  theme === 'dark'
+                    ? 'text-gray-300 hover:text-white hover:bg-gray-800' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                Sign in
+              </Link>
+              <Link 
+                href="/signin"
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 ${
+                  theme === 'dark'
+                    ? 'bg-white text-black hover:bg-gray-100'
+                    : 'bg-white text-black hover:bg-gray-100'
+                }`}
+              >
+                Get started
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
