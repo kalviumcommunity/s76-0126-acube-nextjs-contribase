@@ -10,6 +10,22 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const { data: session, status } = useSession();
 
+  const [open, setOpen] = useState(false);
+  const [repos, setRepos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // close dropdown on outside click
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      const target = e.target as Node;
+      const root = document.querySelector('.header-root');
+      if (open && root && !root.contains(target)) setOpen(false);
+    };
+    document.addEventListener('click', onDoc);
+    return () => document.removeEventListener('click', onDoc);
+  }, [open]);
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -20,7 +36,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className={`fixed w-full z-50 transition-all duration-300 ${
+    <header className={`header-root fixed w-full z-50 transition-all duration-300 ${
       isScrolled 
         ? theme === 'dark' ? 'bg-black/80 backdrop-blur-md border-b border-gray-800' : 'bg-white/80 backdrop-blur-md border-b border-gray-200'
         : 'bg-transparent'
@@ -72,13 +88,70 @@ export default function Header() {
                 {session.user.name}
               </span>
 
-              <a href={session.user.github?.url ?? '#'} target="_blank" rel="noreferrer" title="View on GitHub" className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-white/10">
-                <img src={session.user.image ?? '/favicon.ico'} alt="avatar" className="w-full h-full object-cover" />
-              </a>
+              <div className="relative inline-block">
+                <button
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    setOpen((v) => !v);
+                    // fetch repos when opening
+                    if (!open && session.user.github?.login && repos.length === 0) {
+                      setLoading(true);
+                      try {
+                        const res = await fetch(`https://api.github.com/users/${session.user.github.login}/repos?per_page=6&sort=updated`);
+                        if (res.ok) {
+                          const data = await res.json();
+                          setRepos(data || []);
+                        } else {
+                          setError('Failed to fetch repos');
+                        }
+                      } catch (err) {
+                        setError('Error fetching repos');
+                      } finally {
+                        setLoading(false);
+                      }
+                    }
+                  }}
+                  aria-expanded={open}
+                  title="Open GitHub menu"
+                  className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-white/10 focus:outline-none"
+                >
+                  <img src={session.user.image ?? '/favicon.ico'} alt="avatar" className="w-full h-full object-cover" />
+                </button>
 
-              <button onClick={() => signOut({ callbackUrl: '/signin' })} className="text-sm text-rose-500 hover:underline">
-                Logout
-              </button>
+                {/* Dropdown */}
+                {open && (
+                  <div className={`absolute right-0 mt-2 w-64 bg-white/5 backdrop-blur rounded shadow-lg z-50 p-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <div className="font-medium">{session.user.name}</div>
+                        <a href={session.user.github?.url ?? '#'} target="_blank" rel="noreferrer" className="text-xs text-gray-400 hover:underline">View GitHub profile</a>
+                      </div>
+                      <button onClick={() => { signOut({ callbackUrl: '/signin' }) }} className="text-sm text-rose-500 hover:underline">Logout</button>
+                    </div>
+
+                    <div className="text-xs text-gray-400 mb-2">Top repositories</div>
+
+                    {loading ? (
+                      <div className="text-sm text-gray-400">Loading…</div>
+                    ) : error ? (
+                      <div className="text-sm text-rose-400">{error}</div>
+                    ) : repos.length === 0 ? (
+                      <div className="text-sm text-gray-400">No public repositories found.</div>
+                    ) : (
+                      <ul className="space-y-2">
+                        {repos.slice(0,5).map((r: any) => (
+                          <li key={r.id}>
+                            <a href={r.html_url} target="_blank" rel="noreferrer" className="block p-2 rounded hover:bg-white/3">
+                              <div className="font-medium text-sm">{r.name}</div>
+                              <div className="text-xs text-gray-400">{r.description ?? ''}</div>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <>
