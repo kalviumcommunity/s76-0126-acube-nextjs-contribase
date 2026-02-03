@@ -10,7 +10,7 @@ export default function GithubAuthPage() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      router.push('/blank')
+      router.push('/project')
     }
   }, [status, router])
 

@@ -39,6 +39,27 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/signin',
   },
+  callbacks: {
+    async jwt({ token, account, profile }: any) {
+      // When signing in with GitHub, capture the github username and profile URL
+      if (account?.provider === 'github' && profile) {
+        token.githubLogin = (profile as any).login
+        token.githubUrl = (profile as any).html_url
+      }
+      return token
+    },
+    async session({ session, token }: any) {
+      // Expose GitHub info on the session.user.github object for client usage
+      if (token?.githubLogin) {
+        session.user = session.user || {}
+        ;(session.user as any).github = {
+          login: token.githubLogin,
+          url: token.githubUrl,
+        }
+      }
+      return session
+    },
+  },
   debug: process.env.NODE_ENV === 'development',
 }
 
