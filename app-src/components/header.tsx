@@ -79,15 +79,15 @@ export default function Header() {
 
           {status === 'authenticated' && session?.user ? (
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className={`hidden md:inline text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+              <Link href="/shell/dashboard" className={`hidden md:inline text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Dashboard
               </Link>
-              <Link href="/project" className={`hidden md:inline text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+              <Link href="/public/project" className={`hidden md:inline text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Explore
               </Link>
 
               {/* Show profile + GitHub menu only on the Projects page */}
-              {pathname === '/project' && (
+              {pathname === '/public/project' && (
                 <>
                   <span className={`hidden md:inline text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                     {session.user.name}
@@ -99,16 +99,12 @@ export default function Header() {
                         e.preventDefault();
                         setOpen((v) => !v);
                         // fetch repos when opening
-                        if (!open && session.user.github?.login && repos.length === 0) {
+                        if (!open && session.user?.email && repos.length === 0) {
                           setLoading(true);
                           try {
-                            const res = await fetch(`https://api.github.com/users/${session.user.github.login}/repos?per_page=6&sort=updated`);
-                            if (res.ok) {
-                              const data = await res.json();
-                              setRepos(data || []);
-                            } else {
-                              setError('Failed to fetch repos');
-                            }
+                            // For now, we'll skip GitHub repo fetching since we only have Google OAuth
+                            // You can add GitHub provider later if needed
+                            setError('GitHub repository fetching not available with Google OAuth');
                           } catch (err) {
                             setError('Error fetching repos');
                           } finally {
@@ -129,7 +125,7 @@ export default function Header() {
                         <div className="flex items-center justify-between mb-2">
                           <div>
                             <div className="font-medium">{session.user.name}</div>
-                            <a href={session.user.github?.url ?? '#'} target="_blank" rel="noreferrer" className="text-xs text-gray-400 hover:underline">View GitHub profile</a>
+                            <a href="#" target="_blank" rel="noreferrer" className="text-xs text-gray-400 hover:underline">View profile</a>
                           </div>
                           <button onClick={() => { signOut({ callbackUrl: '/signin' }) }} className="text-sm text-rose-500 hover:underline">Logout</button>
                         </div>

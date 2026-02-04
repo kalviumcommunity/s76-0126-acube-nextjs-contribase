@@ -10,7 +10,9 @@ export default function GoogleAuthPage() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      router.push('/project')
+      // Once the session is established, redirect to the actual projects page
+      // which is currently mounted at `/public/project`
+      router.push('/public/project')
     }
   }, [status, router])
 
