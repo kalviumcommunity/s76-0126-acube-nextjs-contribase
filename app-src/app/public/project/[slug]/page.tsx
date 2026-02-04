@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { GitFork, MessageCircle } from "lucide-react";
 import Header from "../../../../components/header";
@@ -36,6 +36,7 @@ const projects: ProjectDetail[] = [
     tags: ["Logistics", "NGO", "React"],
     stack: ["Logistics", "NGO", "React"],
     currentStage: "Development",
+    repoUrl: "https://github.com/example/disaster-relief-logistics.git",
   },
   {
     slug: "clean-water-iot-monitor",
@@ -75,6 +76,47 @@ const projects: ProjectDetail[] = [
     tags: ["Mapping", "Frontend", "Leaflet"],
     stack: ["Mapping", "Frontend", "Leaflet"],
     currentStage: "Testing",
+    repoUrl: "https://github.com/example/refugee-aid-map.git",
+  },
+  {
+    slug: "telehealth-outreach-platform",
+    title: "Telehealth Outreach Platform",
+    organization: "HealthBridge Alliance",
+    status: "Ongoing",
+    statusColor: "bg-yellow-500/15 text-yellow-400",
+    description:
+      "Virtual consultation and triage system helping rural clinics connect with volunteer doctors worldwide.",
+    tags: ["Healthcare", "Node.js", "PostgreSQL"],
+    stack: ["Healthcare", "Node.js", "PostgreSQL"],
+    currentStage: "Development",
+    repoUrl: "https://github.com/example/telehealth-outreach-platform.git",
+  },
+  {
+    slug: "crisis-volunteer-matcher",
+    title: "Crisis Volunteer Matcher",
+    organization: "ReliefNow",
+    status: "Contributors Needed",
+    statusColor: "bg-sky-500/15 text-sky-400",
+    description:
+      "Matching engine that connects local volunteers with NGOs during floods, earthquakes, and other disasters.",
+    tags: ["Matching", "Python", "FastAPI"],
+    stack: ["Matching", "Python", "FastAPI"],
+    currentStage: "Design",
+    neededRoles: ["Full‑stack Engineer", "Data Engineer"],
+  },
+  {
+    slug: "open-aid-analytics",
+    title: "Open Aid Analytics",
+    organization: "ImpactLab",
+    status: "Completed",
+    statusColor: "bg-emerald-500/15 text-emerald-400",
+    description:
+      "Dashboard that aggregates impact metrics from multiple humanitarian projects into a single open dataset.",
+    tags: ["Data", "Analytics", "TypeScript"],
+    stack: ["Data", "Analytics", "TypeScript"],
+    currentStage: "Deployment",
+    liveDemoUrl: "https://example.com/open-aid-analytics",
+    repoUrl: "https://github.com/example/open-aid-analytics.git",
   },
 ];
 
@@ -88,6 +130,7 @@ const PIPELINE_STEPS: ProjectDetail["currentStage"][] = [
 
 export default function ProjectDetailPage() {
   const params = useParams<{ slug: string }>();
+  const searchParams = useSearchParams();
   const { data: session } = useSession();
 
   const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
@@ -114,13 +157,30 @@ export default function ProjectDetailPage() {
 
   const activeIndex = PIPELINE_STEPS.indexOf(project.currentStage);
 
+  const from = searchParams.get("from");
+  const backFilter =
+    !from || from === "all"
+      ? "all"
+      : from === "ongoing"
+      ? "ongoing"
+      : from === "needs-help"
+      ? "needs-help"
+      : from === "completed"
+      ? "completed"
+      : "all";
+
+  const backHref =
+    backFilter === "all"
+      ? "/public/project"
+      : `/public/project?filter=${backFilter}`;
+
   return (
     <main className="min-h-screen bg-background text-foreground">
       <Header />
       <div className="mx-auto max-w-5xl px-6 pb-16 pt-24 md:px-10">
         <div className="mb-6 flex items-center justify-between">
           <Link
-            href="/public/project"
+            href={backHref}
             className="text-xs text-slate-400 hover:text-slate-200"
           >
             &larr; Back to Dashboard
@@ -175,20 +235,19 @@ export default function ProjectDetailPage() {
               )}
             </section>
 
-            {/* Reuse / clone block */}
+            {/* Reuse block with plain repository URL */}
             {project.repoUrl && (
               <section className="rounded-2xl border border-zinc-900 bg-[#080814] px-6 py-5">
                 <h3 className="mb-3 text-xs font-medium text-slate-200">
-                  Reuse this project
+                  Project repository
                 </h3>
                 <div className="flex flex-col gap-3 md:flex-row md:items-center">
                   <div className="flex-1 overflow-hidden rounded-lg bg-black/60 px-4 py-3 text-[11px] text-slate-200">
-                    <span className="mr-2 text-slate-500">git clone</span>
                     <span className="break-all">{project.repoUrl}</span>
                   </div>
                   <button
                     type="button"
-                    onClick={() => navigator.clipboard.writeText(`git clone ${project.repoUrl}`)}
+                    onClick={() => navigator.clipboard.writeText(project.repoUrl ?? "")}
                     className="mt-2 rounded-lg bg-zinc-800 px-4 py-2 text-xs font-medium text-slate-100 hover:bg-zinc-700 md:mt-0"
                   >
                     Copy
@@ -236,7 +295,7 @@ export default function ProjectDetailPage() {
           </>
         ) : (
           <>
-            {/* Development Pipeline for non-completed projects */}
+            {/* For ongoing projects, show status pipeline + GitHub repo */}
             <section className="mb-8 rounded-2xl border border-zinc-900 bg-[#080814] px-6 py-5">
               <h2 className="mb-5 text-sm font-medium text-slate-100">
                 Development Pipeline
@@ -284,17 +343,25 @@ export default function ProjectDetailPage() {
               </div>
             </section>
 
-            {/* Actions */}
-            <section className="flex flex-col gap-3 md:flex-row">
-              <button className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#10101f] px-6 py-3 text-sm font-medium text-slate-100 hover:bg-[#151528]">
-                <GitFork size={16} />
-                Fork Repository
-              </button>
-              <button className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-indigo-500/40 bg-[#09091a] px-6 py-3 text-sm font-medium text-indigo-200 hover:bg-[#11112a]">
-                <MessageCircle size={16} />
-                Contact Owner
-              </button>
-            </section>
+            {project.repoUrl && (
+              <section className="rounded-2xl border border-zinc-900 bg-[#080814] px-6 py-5">
+                <h3 className="mb-3 text-xs font-medium text-slate-200">
+                  Project repository
+                </h3>
+                <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                  <div className="flex-1 overflow-hidden rounded-lg bg-black/60 px-4 py-3 text-[11px] text-slate-200">
+                    <span className="break-all">{project.repoUrl}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => navigator.clipboard.writeText(project.repoUrl ?? "")}
+                    className="mt-2 rounded-lg bg-zinc-800 px-4 py-2 text-xs font-medium text-slate-100 hover:bg-zinc-700 md:mt-0"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </section>
+            )}
           </>
         )}
       </div>
