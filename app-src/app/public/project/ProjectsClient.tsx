@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Search, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 const projects = [
   {
@@ -46,10 +47,79 @@ const projects = [
       "Interactive map showing safe zones, medical centers, and food distribution points.",
     tags: ["Mapping", "Frontend", "Leaflet"],
   },
+  {
+    title: "Telehealth Outreach Platform",
+    slug: "telehealth-outreach-platform",
+    organization: "HealthBridge Alliance",
+    status: "Ongoing",
+    statusColor: "bg-yellow-500/15 text-yellow-400",
+    description:
+      "Virtual consultation and triage system helping rural clinics connect with volunteer doctors worldwide.",
+    tags: ["Healthcare", "Node.js", "PostgreSQL"],
+  },
+  {
+    title: "Crisis Volunteer Matcher",
+    slug: "crisis-volunteer-matcher",
+    organization: "ReliefNow",
+    status: "Contributors Needed",
+    statusColor: "bg-sky-500/15 text-sky-400",
+    description:
+      "Matching engine that connects local volunteers with NGOs during floods, earthquakes, and other disasters.",
+    tags: ["Matching", "Python", "FastAPI"],
+  },
+  {
+    title: "Open Aid Analytics",
+    slug: "open-aid-analytics",
+    organization: "ImpactLab",
+    status: "Completed",
+    statusColor: "bg-emerald-500/15 text-emerald-400",
+    description:
+      "Dashboard that aggregates impact metrics from multiple humanitarian projects into a single open dataset.",
+    tags: ["Data", "Analytics", "TypeScript"],
+  },
 ];
 
 export default function ProjectsClient() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const [activeFilter, setActiveFilter] = useState<
+    "All" | "Ongoing" | "Needs Help" | "Completed"
+  >("All");
+
+  // Sync filter with URL (?filter=ongoing|needs-help|completed|all)
+  useEffect(() => {
+    const value = searchParams.get("filter");
+    if (!value) return;
+
+    switch (value.toLowerCase()) {
+      case "ongoing":
+        setActiveFilter("Ongoing");
+        break;
+      case "needs-help":
+        setActiveFilter("Needs Help");
+        break;
+      case "completed":
+        setActiveFilter("Completed");
+        break;
+      case "all":
+      default:
+        setActiveFilter("All");
+        break;
+    }
+  }, [searchParams]);
+
+  const filteredProjects = useMemo(() => {
+    if (activeFilter === "All") return projects;
+    if (activeFilter === "Ongoing") {
+      return projects.filter((p) => p.status === "Ongoing");
+    }
+    if (activeFilter === "Needs Help") {
+      // Match the label to the underlying status "Contributors Needed"
+      return projects.filter((p) => p.status === "Contributors Needed");
+    }
+    // Completed
+    return projects.filter((p) => p.status === "Completed");
+  }, [activeFilter]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -79,18 +149,45 @@ export default function ProjectsClient() {
 
           <div className="flex flex-wrap items-center gap-3">
             <div className="inline-flex rounded-xl bg-[#080814] p-1 text-xs text-slate-300">
-              {["All", "Ongoing", "Needs Help", "Completed"].map((filter, i) => (
-                <button
-                  key={filter}
-                  className={`rounded-lg px-3 py-1 transition-colors ${
-                    i === 0
-                      ? "bg-slate-100 text-slate-900"
-                      : "text-slate-300 hover:bg-slate-800/80"
-                  }`}
-                >
-                  {filter}
-                </button>
-              ))}
+              {["All", "Ongoing", "Needs Help", "Completed"].map((filter) => {
+                const typedFilter =
+                  filter === "Needs Help"
+                    ? "Needs Help"
+                    : (filter as "All" | "Ongoing" | "Completed");
+
+                const isActive = activeFilter === typedFilter;
+
+                return (
+                  <button
+                    key={filter}
+                    type="button"
+                    onClick={() => {
+                      setActiveFilter(
+                        filter as "All" | "Ongoing" | "Needs Help" | "Completed"
+                      );
+                      const slug =
+                        filter === "All"
+                          ? "all"
+                          : filter === "Ongoing"
+                          ? "ongoing"
+                          : filter === "Needs Help"
+                          ? "needs-help"
+                          : "completed";
+                      // Update URL query without full reload for sharable filters
+                      const url = new URL(window.location.href);
+                      url.searchParams.set("filter", slug);
+                      window.history.replaceState(null, "", url.toString());
+                    }}
+                    className={`rounded-lg px-3 py-1 transition-colors ${
+                      isActive
+                        ? "bg-slate-100 text-slate-900"
+                        : "text-slate-300 hover:bg-slate-800/80"
+                    }`}
+                  >
+                    {filter}
+                  </button>
+                );
+              })}
             </div>
 
             <button className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-xs font-medium text-white shadow-[0_0_0_1px_rgba(129,140,248,0.4)] shadow-indigo-500/40 hover:bg-indigo-400">
@@ -102,13 +199,24 @@ export default function ProjectsClient() {
 
         {/* Projects Grid */}
         <section className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
-            <Link
-              key={project.title}
-              href={`/public/project/${project.slug}`}
+          {filteredProjects.map((project) => {
+            // Preserve which filter the user was on when navigating to details
+            const filterSlug =
+              activeFilter === "All"
+                ? "all"
+                : activeFilter === "Ongoing"
+                ? "ongoing"
+                : activeFilter === "Needs Help"
+                ? "needs-help"
+                : "completed";
+
+            return (
+              <Link
+                key={project.title}
+                href={`/public/project/${project.slug}?from=${filterSlug}`}
               className="group rounded-2xl border border-zinc-900 bg-[#080814] p-5 shadow-[0_0_0_1px_rgba(15,23,42,0.8)] hover:border-zinc-700 hover:bg-[#0c0c1a] transition-colors"
-            >
-              <article>
+              >
+                <article>
                 <div className="mb-4 flex items-start justify-between gap-3">
                   <div>
                     <h3 className="text-sm font-semibold text-slate-50 group-hover:text-slate-100">
@@ -141,7 +249,8 @@ export default function ProjectsClient() {
                 </div>
               </article>
             </Link>
-          ))}
+            );
+          })}
         </section>
       </main>
     </div>
