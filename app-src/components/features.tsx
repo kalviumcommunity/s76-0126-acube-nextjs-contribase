@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
 import { useTheme } from '../contexts/theme-context';
+import ScrollReveal from './scroll-reveal';
 
 export default function Features() {
   const { theme } = useTheme();
@@ -13,7 +14,8 @@ export default function Features() {
         </svg>
       ),
       title: "Collaboration Tools",
-      description: "Work together seamlessly with real-time collaboration features and team management."
+      description: "Work together seamlessly with real-time collaboration features and team management.",
+      color: "text-indigo-500"
     },
     {
       icon: (
@@ -22,7 +24,8 @@ export default function Features() {
         </svg>
       ),
       title: "Project Templates",
-      description: "Start quickly with pre-built project templates for common NGO use cases."
+      description: "Start quickly with pre-built project templates for common NGO use cases.",
+      color: "text-emerald-500"
     },
     {
       icon: (
@@ -31,7 +34,8 @@ export default function Features() {
         </svg>
       ),
       title: "Impact Tracking",
-      description: "Measure and showcase your organization's impact with comprehensive analytics."
+      description: "Measure and showcase your organization's impact with comprehensive analytics.",
+      color: "text-purple-500"
     },
     {
       icon: (
@@ -40,7 +44,8 @@ export default function Features() {
         </svg>
       ),
       title: "Secure Platform",
-      description: "Enterprise-grade security ensures your data and projects are always protected."
+      description: "Enterprise-grade security ensures your data and projects are always protected.",
+      color: "text-sky-500"
     },
     {
       icon: (
@@ -49,7 +54,8 @@ export default function Features() {
         </svg>
       ),
       title: "Quick Setup",
-      description: "Get started in minutes with our intuitive onboarding process."
+      description: "Get started in minutes with our intuitive onboarding process.",
+      color: "text-amber-500"
     },
     {
       icon: (
@@ -58,53 +64,47 @@ export default function Features() {
         </svg>
       ),
       title: "24/7 Support",
-      description: "Round-the-clock support from our dedicated team of experts."
+      description: "Round-the-clock support from our dedicated team of experts.",
+      color: "text-rose-500"
     }
   ];
 
   return (
-    <section id="features" className={`py-20 transition-colors duration-300 ${
-      theme === 'dark' ? 'bg-black' : 'bg-gray-50'
-    }`}>
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className={`text-4xl md:text-5xl font-bold mb-4 transition-colors animate-fadeInUp ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
-            Why Contribase?
-          </h2>
-          <p className={`text-xl max-w-3xl mx-auto transition-colors animate-fadeInUp ${
-            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-          }`} style={{ animationDelay: '0.2s' }}>
-            Everything you need to build, deploy, and scale digital solutions that multiply your impact.
-          </p>
-        </div>
+    <section id="features" className="py-32 bg-transparent relative">
+      <div className="max-w-screen-2xl mx-auto px-6 relative z-10">
+        <ScrollReveal>
+          <div className="text-center mb-20">
+            <h2 className={`text-4xl md:text-5xl font-black mb-6 tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-slate-900'
+              }`}>
+              Why Contribase?
+            </h2>
+            <p className={`text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
+              }`}>
+              Everything you need to build, deploy, and scale digital solutions that multiply your impact.
+            </p>
+          </div>
+        </ScrollReveal>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <div
-              key={index}
-              className={`rounded-xl p-8 border transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fadeInUp ${
-                theme === 'dark' ? 'bg-black border-gray-800' : 'bg-white border-gray-200 shadow-lg'
-              }`}
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className={`mb-6 inline-block transition-colors ${
-                theme === 'dark' ? 'text-blue-500' : 'text-blue-600'
-              }`}>
-                {feature.icon}
+            <ScrollReveal key={index} delay={index * 100}>
+              <div
+                className={`h-full rounded-[2rem] p-8 border transition-all duration-500 hover:scale-[1.02] group ${theme === 'dark' ? 'border-zinc-800/80 bg-black' : 'bg-white border-gray-200 shadow-lg'
+                  }`}
+              >
+                <div className={`mb-8 inline-block p-3.5 rounded-xl transition-all duration-500 group-hover:scale-110 ${theme === 'dark' ? 'bg-slate-900/40' : 'bg-slate-100/80'} ${feature.color}`}>
+                  {feature.icon}
+                </div>
+                <h3 className={`text-2xl font-black mb-4 transition-colors ${theme === 'dark' ? 'text-white group-hover:text-indigo-400' : 'text-slate-900'
+                  }`}>
+                  {feature.title}
+                </h3>
+                <p className={`text-lg leading-relaxed transition-colors ${theme === 'dark' ? 'text-slate-400 group-hover:text-slate-300' : 'text-slate-600'
+                  }`}>
+                  {feature.description}
+                </p>
               </div>
-              <h3 className={`text-xl font-bold mb-4 transition-colors ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
-              }`}>
-                {feature.title}
-              </h3>
-              <p className={`transition-colors ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                {feature.description}
-              </p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

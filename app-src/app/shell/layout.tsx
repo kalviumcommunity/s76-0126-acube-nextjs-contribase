@@ -4,7 +4,7 @@ export default function ShellLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black to-zinc-950 text-white">
+    <div className="min-h-screen">
       {children}
     </div>
   );

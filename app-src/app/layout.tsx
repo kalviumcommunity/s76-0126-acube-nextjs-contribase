@@ -32,6 +32,8 @@ export const metadata: Metadata = {
   },
 }
 
+import GlobalBackground from '../components/global-background'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -39,10 +41,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`font-sans antialiased transition-colors duration-300`}>
+      <body className={`font-sans antialiased transition-colors duration-300 min-h-screen relative`}>
         <AuthProvider>
           <ThemeProvider>
-            {children}
+            <GlobalBackground />
+            <div className="relative z-10">
+              {children}
+            </div>
             <Analytics />
           </ThemeProvider>
         </AuthProvider>

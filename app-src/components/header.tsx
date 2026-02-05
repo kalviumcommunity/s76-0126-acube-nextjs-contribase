@@ -38,147 +38,100 @@ export default function Header() {
   }, []);
 
   return (
-    <header className={`header-root fixed w-full z-50 transition-all duration-300 ${
-      isScrolled 
-        ? theme === 'dark' ? 'bg-black/80 backdrop-blur-md border-b border-gray-800' : 'bg-white/80 backdrop-blur-md border-b border-gray-200'
-        : 'bg-transparent'
-    }`}>
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center space-x-2">
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
-            theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-900'
-          }`}>
-            C
-          </div>
-          <span className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Contribase
-          </span>
-        </Link>
+    <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled
+      ? `${theme === 'dark' ? 'bg-black/80 backdrop-blur-2xl border-b border-zinc-800/50 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-lg'}`
+      : 'bg-transparent'
+      }`}>
+      <div className="max-w-screen-2xl mx-auto w-full px-8 py-5 flex items-center justify-between gap-8">
+        {/* Logo */}
+        <div className="flex items-center gap-3 shrink-0">
+          <Link href="/" className="flex items-center space-x-2.5 group">
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-base transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${theme === 'dark' ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'bg-slate-900 text-white shadow-lg'
+              }`}>
+              C
+            </div>
+            <span className={`text-xl font-black tracking-tighter transition-colors ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+              Contribase
+            </span>
+          </Link>
+        </div>
 
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link href="#features" className={`transition-colors ${theme === 'dark' ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
-            Features
-          </Link>
-          <Link href="#how-it-works" className={`transition-colors ${theme === 'dark' ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
-            How it works
-          </Link>
-          <Link href="#impact" className={`transition-colors ${theme === 'dark' ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
-            Impact
-          </Link>
+        {/* Navigation */}
+        <nav className="hidden lg:flex items-center gap-10">
+          {[
+            { name: 'Features', href: '/#features' },
+            { name: 'How it works', href: '/#how-it-works' },
+            { name: 'Impact', href: '/#impact' }
+          ].map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className={`text-sm font-bold tracking-tight transition-all duration-300 hover:-translate-y-0.5 ${theme === 'dark' ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
+            >
+              {link.name}
+            </Link>
+          ))}
         </nav>
 
-        <div className="flex items-center space-x-4">
+        {/* Actions */}
+        <div className="flex items-center gap-6">
           <button
             onClick={toggleTheme}
-            className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${
-              theme === 'dark' ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+            className={`relative w-12 h-6 rounded-full transition-all duration-500 focus:outline-none overflow-hidden ${theme === 'dark'
+              ? 'bg-zinc-800'
+              : 'bg-slate-200'
+              }`}
+            aria-label="Toggle theme"
           >
-            {theme === 'dark' ? '🌙' : '☀️'}
+            <div
+              className={`absolute top-1 left-1 w-4 h-4 rounded-full transition-all duration-500 ease-in-out transform ${theme === 'dark' ? 'translate-x-6 bg-white shadow-[0_0_12px_rgba(255,255,255,1)]' : 'translate-x-0 bg-slate-600'
+                }`}
+            />
           </button>
 
           {status === 'authenticated' && session?.user ? (
-            <div className="flex items-center gap-4">
-              <Link href="/shell/dashboard" className={`hidden md:inline text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Dashboard
-              </Link>
-              <Link href="/public/project" className={`hidden md:inline text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+            <div className="flex items-center gap-6">
+              <Link href="/public/project" className={`text-sm font-bold tracking-tight transition-colors ${theme === 'dark' ? 'text-slate-300 hover:text-white' : 'text-slate-700 hover:text-slate-900'}`}>
                 Explore
               </Link>
 
-              {/* Show profile + GitHub menu only on the Projects page */}
               {pathname === '/public/project' && (
-                <>
-                  <span className={`hidden md:inline text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    {session.user.name}
-                  </span>
+                <div className="relative inline-block header-root">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setOpen((v) => !v);
+                    }}
+                    className="w-9 h-9 rounded-xl overflow-hidden ring-2 ring-white/10 focus:outline-none transition-transform hover:scale-110 active:scale-95"
+                  >
+                    <img src={session.user.image ?? '/favicon.ico'} alt="avatar" className="w-full h-full object-cover" />
+                  </button>
 
-                  <div className="relative inline-block">
-                    <button
-                      onClick={async (e) => {
-                        e.preventDefault();
-                        setOpen((v) => !v);
-                        // fetch repos when opening
-                        if (!open && session.user?.email && repos.length === 0) {
-                          setLoading(true);
-                          try {
-                            // For now, we'll skip GitHub repo fetching since we only have Google OAuth
-                            // You can add GitHub provider later if needed
-                            setError('GitHub repository fetching not available with Google OAuth');
-                          } catch (err) {
-                            setError('Error fetching repos');
-                          } finally {
-                            setLoading(false);
-                          }
-                        }
-                      }}
-                      aria-expanded={open}
-                      title="Open GitHub menu"
-                      className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-white/10 focus:outline-none"
-                    >
-                      <img src={session.user.image ?? '/favicon.ico'} alt="avatar" className="w-full h-full object-cover" />
-                    </button>
-
-                    {/* Dropdown */}
-                    {open && (
-                      <div className={`absolute right-0 mt-2 w-64 bg-white/5 backdrop-blur rounded shadow-lg z-50 p-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        <div className="flex items-center justify-between mb-2">
-                          <div>
-                            <div className="font-medium">{session.user.name}</div>
-                            <a href="#" target="_blank" rel="noreferrer" className="text-xs text-gray-400 hover:underline">View profile</a>
-                          </div>
-                          <button onClick={() => { signOut({ callbackUrl: '/signin' }) }} className="text-sm text-rose-500 hover:underline">Logout</button>
-                        </div>
-
-                        <div className="text-xs text-gray-400 mb-2">Top repositories</div>
-
-                        {loading ? (
-                          <div className="text-sm text-gray-400">Loading…</div>
-                        ) : error ? (
-                          <div className="text-sm text-rose-400">{error}</div>
-                        ) : repos.length === 0 ? (
-                          <div className="text-sm text-gray-400">No public repositories found.</div>
-                        ) : (
-                          <ul className="space-y-2">
-                            {repos.slice(0,5).map((r: any) => (
-                              <li key={r.id}>
-                                <a href={r.html_url} target="_blank" rel="noreferrer" className="block p-2 rounded hover:bg-white/3">
-                                  <div className="font-medium text-sm">{r.name}</div>
-                                  <div className="text-xs text-gray-400">{r.description ?? ''}</div>
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </>
+                  {/* Dropdown would go here if needed */}
+                </div>
               )}
             </div>
           ) : (
-            <>
-              <Link 
+            <div className="flex items-center gap-4">
+              <Link
                 href="/signin"
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  theme === 'dark'
-                    ? 'text-gray-300 hover:text-white hover:bg-gray-800' 
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                }`}
+                className={`px-5 py-2.5 text-sm font-bold transition-all duration-300 rounded-xl ${theme === 'dark'
+                  ? 'text-slate-300 hover:text-white hover:bg-white/5'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  }`}
               >
                 Sign in
               </Link>
-              <Link 
+              <Link
                 href="/signin"
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 ${
-                  theme === 'dark'
-                    ? 'bg-white text-black hover:bg-gray-100'
-                    : 'bg-white text-black hover:bg-gray-100'
-                }`}
+                className={`px-6 py-2.5 text-sm font-black transition-all duration-500 hover:scale-105 active:scale-95 rounded-xl shadow-xl ${theme === 'dark'
+                  ? 'bg-white text-black hover:shadow-white/10'
+                  : 'bg-slate-900 text-white hover:bg-slate-800'
+                  }`}
               >
                 Get started
               </Link>
-            </>
+            </div>
           )}
         </div>
       </div>

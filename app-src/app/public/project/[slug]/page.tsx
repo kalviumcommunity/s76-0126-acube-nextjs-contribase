@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { GitFork, MessageCircle } from "lucide-react";
+import { GitFork, MessageCircle, ArrowLeft } from "lucide-react";
 import Header from "../../../../components/header";
 import Footer from "../../../../components/footer";
+import { useTheme } from "../../../../contexts/theme-context";
 
 type ProjectStatus = "Ongoing" | "Contributors Needed" | "Completed";
 
@@ -128,23 +129,28 @@ const PIPELINE_STEPS: ProjectDetail["currentStage"][] = [
   "Deployment",
 ];
 
+import ScrollReveal from "../../../../components/scroll-reveal";
+
 export default function ProjectDetailPage() {
   const params = useParams<{ slug: string }>();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
+  const { theme } = useTheme();
 
-  const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
+  const slug = params?.slug ? (Array.isArray(params.slug) ? params.slug[0] : params.slug) : "";
   const project = projects.find((p) => p.slug === slug);
 
   if (!project) {
     return (
-      <main className="min-h-screen">
+      <main className={`min-h-screen transition-colors duration-300 ${theme === 'dark' ? 'bg-transparent' : 'bg-slate-50'
+        }`}>
         <Header />
-        <div className="pt-20 mx-auto max-w-4xl px-6 pb-16 md:px-10 text-sm text-slate-400">
+        <div className={`pt-32 mx-auto max-w-4xl px-6 pb-16 md:px-10 text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
+          }`}>
           Project not found.{" "}
           <Link
             href="/public/project"
-            className="text-indigo-400 hover:text-indigo-300"
+            className="text-indigo-400 hover:text-indigo-300 font-bold"
           >
             Back to projects
           </Link>
@@ -157,17 +163,17 @@ export default function ProjectDetailPage() {
 
   const activeIndex = PIPELINE_STEPS.indexOf(project.currentStage);
 
-  const from = searchParams.get("from");
+  const from = searchParams?.get("from");
   const backFilter =
     !from || from === "all"
       ? "all"
       : from === "ongoing"
-      ? "ongoing"
-      : from === "needs-help"
-      ? "needs-help"
-      : from === "completed"
-      ? "completed"
-      : "all";
+        ? "ongoing"
+        : from === "needs-help"
+          ? "needs-help"
+          : from === "completed"
+            ? "completed"
+            : "all";
 
   const backHref =
     backFilter === "all"
@@ -175,194 +181,230 @@ export default function ProjectDetailPage() {
       : `/public/project?filter=${backFilter}`;
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className={`min-h-screen transition-colors duration-300 bg-transparent`}>
       <Header />
-      <div className="mx-auto max-w-5xl px-6 pb-16 pt-24 md:px-10">
-        <div className="mb-6 flex items-center justify-between">
-          <Link
-            href={backHref}
-            className="text-xs text-slate-400 hover:text-slate-200"
-          >
-            &larr; Back to Dashboard
-          </Link>
+      <div className="mx-auto max-w-screen-2xl px-6 pb-32 pt-32 md:px-10 relative z-10">
+        <ScrollReveal>
+          <div className="mb-10 flex items-center justify-between">
+            <Link
+              href={backHref}
+              className={`text-sm font-bold flex items-center gap-2 group transition-all ${theme === 'dark' ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+                }`}
+            >
+              <div className="p-2 rounded-lg bg-slate-800/10 transition-colors group-hover:bg-indigo-500/20">
+                <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" />
+              </div>
+              Back to Dashboard
+            </Link>
 
-          <span
-            className={`rounded-full px-3 py-1 text-[10px] font-medium ${project.statusColor}`}
-          >
-            {project.status}
-          </span>
-        </div>
-
-        <section className="mb-8">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-50">
-            {project.title}
-          </h1>
-          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-400">
-            <span className="flex items-center gap-1">
-              <span className="text-slate-500">by</span>
-              <span>{project.organization}</span>
-            </span>
-            <span className="text-slate-600">•</span>
-            <span className="flex items-center gap-1">
-              {project.stack.join(", ")}
+            <span
+              className={`rounded-xl px-4 py-1.5 text-[10px] font-black uppercase tracking-widest border backdrop-blur-md ${theme === 'dark'
+                ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
+                : 'bg-indigo-50 text-indigo-600 border-indigo-100 shadow-sm'
+                }`}
+            >
+              {project.status}
             </span>
           </div>
-          <p className="mt-4 max-w-3xl text-sm text-slate-300">
-            {project.description}
-          </p>
-        </section>
+        </ScrollReveal>
+
+        <ScrollReveal delay={100}>
+          <section className="mb-10">
+            <h1 className={`text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter transition-colors ${theme === 'dark' ? 'text-white' : 'text-slate-900'
+              }`}>
+              {project.title}
+            </h1>
+            <div className={`mt-3 flex flex-wrap items-center gap-3 text-xs font-bold tracking-tight transition-colors ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'
+              }`}>
+              <span className="flex items-center gap-2 uppercase tracking-wide">
+                <span className={theme === 'dark' ? 'text-indigo-400 opacity-60' : 'text-indigo-500'}>By</span>
+                <span className={theme === 'dark' ? 'text-slate-300' : 'text-slate-900'}>{project.organization}</span>
+              </span>
+              <span className={theme === 'dark' ? 'text-slate-800' : 'text-slate-300'}>|</span>
+              <span className="flex items-center gap-1 text-indigo-400/80">
+                {project.stack.join(" • ")}
+              </span>
+            </div>
+            <p className={`mt-6 max-w-3xl text-base md:text-lg font-medium leading-relaxed transition-colors ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
+              }`}>
+              {project.description}
+            </p>
+          </section>
+        </ScrollReveal>
 
         {project.status === "Completed" ? (
-          <>
-            {/* Completed project banner */}
-            <section className="mb-6 flex flex-col items-start justify-between gap-4 rounded-2xl border border-zinc-900 bg-[#080814] px-6 py-5 md:flex-row md:items-center">
-              <div>
-                <h2 className="text-sm font-semibold text-emerald-400">
-                  Project Completed
-                </h2>
-                <p className="mt-1 text-xs text-slate-400">
-                  This solution is live and ready for reuse.
-                </p>
-              </div>
-              {project.liveDemoUrl && (
-                <Link
-                  href={project.liveDemoUrl}
-                  target="_blank"
-                  className="inline-flex items-center justify-center rounded-lg bg-emerald-500 px-4 py-2 text-xs font-medium text-white hover:bg-emerald-400"
-                >
-                  View Live Demo
-                </Link>
-              )}
-            </section>
-
-            {/* Reuse block with plain repository URL */}
-            {project.repoUrl && (
-              <section className="rounded-2xl border border-zinc-900 bg-[#080814] px-6 py-5">
-                <h3 className="mb-3 text-xs font-medium text-slate-200">
-                  Project repository
-                </h3>
-                <div className="flex flex-col gap-3 md:flex-row md:items-center">
-                  <div className="flex-1 overflow-hidden rounded-lg bg-black/60 px-4 py-3 text-[11px] text-slate-200">
-                    <span className="break-all">{project.repoUrl}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => navigator.clipboard.writeText(project.repoUrl ?? "")}
-                    className="mt-2 rounded-lg bg-zinc-800 px-4 py-2 text-xs font-medium text-slate-100 hover:bg-zinc-700 md:mt-0"
+          <ScrollReveal delay={200}>
+            <div className="space-y-6">
+              {/* Completed project banner */}
+              <section className={`flex flex-col items-start justify-between gap-6 rounded-2xl border p-8 lg:p-10 md:flex-row md:items-center transition-all ${theme === 'dark' ? 'border-emerald-500/20 bg-black' : 'border-emerald-100 bg-emerald-50/40 shadow-emerald-500/10'
+                }`}>
+                <div>
+                  <h2 className="text-[10px] font-black text-emerald-500 tracking-[0.2em] uppercase mb-2">
+                    Project Completed
+                  </h2>
+                  <p className={`text-lg font-medium leading-normal ${theme === 'dark' ? 'text-slate-300' : 'text-emerald-800/80'
+                    }`}>
+                    This professional solution is live and ready for reuse across the ecosystem.
+                  </p>
+                </div>
+                {project.liveDemoUrl && (
+                  <Link
+                    href={project.liveDemoUrl}
+                    target="_blank"
+                    className="group relative inline-flex items-center justify-center rounded-xl bg-emerald-600 px-8 py-3.5 text-sm font-black text-white hover:bg-emerald-500 transition-all duration-300 hover:scale-[1.05] overflow-hidden"
                   >
-                    Copy
-                  </button>
-                </div>
+                    <span className="relative z-10">View Live Demo</span>
+                  </Link>
+                )}
               </section>
-            )}
-          </>
-        ) : project.status === "Contributors Needed" ? (
-          <>
-            {/* Contributors Needed card */}
-            <section className="mb-8 rounded-2xl border border-zinc-900 bg-[#080814] px-6 py-5">
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2 text-sm font-medium text-slate-100">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white text-xs font-semibold">
-                    Co
-                  </div>
-                  <div>
-                    <div>Contributors Needed</div>
-                    <p className="mt-0.5 text-xs text-slate-400">
-                      This project is actively looking for help in the following areas:
-                    </p>
-                  </div>
-                </div>
 
-                <div className="mt-2 flex flex-wrap gap-3">
-                  {(project.neededRoles ?? []).map((role) => (
-                    <span
-                      key={role}
-                      className="rounded-full bg-slate-900 px-4 py-2 text-xs font-medium text-slate-100 border border-slate-700"
-                    >
-                      {role}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* Primary contribute CTA */}
-            <section className="mt-4">
-              <button className="w-full rounded-2xl bg-indigo-500 py-3.5 text-sm font-medium text-white hover:bg-indigo-400">
-                I Want to Contribute
-              </button>
-            </section>
-          </>
-        ) : (
-          <>
-            {/* For ongoing projects, show status pipeline + GitHub repo */}
-            <section className="mb-8 rounded-2xl border border-zinc-900 bg-[#080814] px-6 py-5">
-              <h2 className="mb-5 text-sm font-medium text-slate-100">
-                Development Pipeline
-              </h2>
-              <div className="flex items-center justify-between gap-6">
-                {PIPELINE_STEPS.map((step, index) => {
-                  const isActive = index <= activeIndex;
-                  return (
-                    <div
-                      key={step}
-                      className="flex flex-1 flex-col items-center gap-2 text-xs"
-                    >
-                      <div
-                        className={`h-2 w-full rounded-full ${
-                          index === 0 ? "bg-transparent" : "bg-zinc-800"
-                        }`}
-                      >
-                        {index > 0 && (
-                          <div
-                            className={`h-full rounded-full transition-colors ${
-                              index <= activeIndex
-                                ? "bg-emerald-400"
-                                : "bg-transparent"
-                            }`}
-                          />
-                        )}
-                      </div>
-                      <div
-                        className={`h-3 w-3 rounded-full border ${
-                          isActive
-                            ? "border-emerald-400 bg-emerald-400"
-                            : "border-zinc-700 bg-transparent"
-                        }`}
-                      />
-                      <span
-                        className={`mt-1 text-[11px] ${
-                          isActive ? "text-slate-100" : "text-slate-500"
-                        }`}
-                      >
-                        {step}
-                      </span>
+              {/* Reuse block with plain repository URL */}
+              {project.repoUrl && (
+                <section className={`rounded-2xl border p-8 lg:p-10 transition-all ${theme === 'dark' ? 'border-zinc-800/50 bg-black' : 'shadow-slate-200/50'
+                  }`}>
+                  <h3 className={`mb-4 text-[10px] font-black tracking-[0.2em] uppercase ${theme === 'dark' ? 'text-slate-500' : 'text-slate-900'
+                    }`}>
+                    Project Repository
+                  </h3>
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center">
+                    <div className={`flex-1 overflow-hidden rounded-xl px-5 py-4 text-xs font-mono tracking-tight ${theme === 'dark' ? 'bg-black text-indigo-400 border border-zinc-800/50' : 'bg-slate-50 text-indigo-600 border border-slate-200 shadow-inner'
+                      }`}>
+                      <span className="break-all">{project.repoUrl}</span>
                     </div>
-                  );
-                })}
-              </div>
-            </section>
-
-            {project.repoUrl && (
-              <section className="rounded-2xl border border-zinc-900 bg-[#080814] px-6 py-5">
-                <h3 className="mb-3 text-xs font-medium text-slate-200">
-                  Project repository
-                </h3>
-                <div className="flex flex-col gap-3 md:flex-row md:items-center">
-                  <div className="flex-1 overflow-hidden rounded-lg bg-black/60 px-4 py-3 text-[11px] text-slate-200">
-                    <span className="break-all">{project.repoUrl}</span>
+                    <button
+                      type="button"
+                      onClick={() => navigator.clipboard.writeText(project.repoUrl ?? "")}
+                      className={`rounded-xl px-8 py-4 text-sm font-black transition-all duration-300 ${theme === 'dark' ? 'bg-white text-black hover:bg-slate-100' : 'bg-slate-900 text-white hover:bg-slate-800'
+                        } hover:scale-[1.05] active:scale-[0.98] shadow-xl shadow-white/5`}
+                    >
+                      Copy URL
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => navigator.clipboard.writeText(project.repoUrl ?? "")}
-                    className="mt-2 rounded-lg bg-zinc-800 px-4 py-2 text-xs font-medium text-slate-100 hover:bg-zinc-700 md:mt-0"
-                  >
-                    Copy
-                  </button>
+                </section>
+              )}
+            </div>
+          </ScrollReveal>
+        ) : project.status === "Contributors Needed" ? (
+          <ScrollReveal delay={200}>
+            <div className="space-y-6">
+              {/* Contributors Needed card */}
+              <section className={`rounded-2xl border p-8 lg:p-10 transition-all ${theme === 'dark' ? 'border-indigo-500/20 bg-black' : 'border-indigo-100 bg-indigo-50/30'
+                }`}>
+                <div className="flex flex-col gap-6">
+                  <div className="flex items-center gap-5">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white text-base font-black shadow-2xl shadow-indigo-600/30">
+                      HI
+                    </div>
+                    <div>
+                      <div className={`text-xl font-black tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                        Hiring Contributors
+                      </div>
+                      <p className={`mt-0.5 text-base font-medium ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
+                        }`}>
+                        This initiative is actively recruiting for the following specialized roles:
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    {(project.neededRoles ?? []).map((role) => (
+                      <span
+                        key={role}
+                        className={`rounded-xl px-5 py-2.5 text-xs font-black tracking-tight border transition-all duration-300 ${theme === 'dark'
+                          ? 'bg-zinc-900/40 text-indigo-400 border-indigo-500/20 hover:border-indigo-500/50'
+                          : 'bg-white text-indigo-600 border-indigo-200'
+                          }`}
+                      >
+                        {role}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </section>
-            )}
-          </>
+
+              {/* Primary contribute CTA */}
+              <section>
+                <button className="group relative w-full rounded-2xl bg-indigo-600 py-5 text-lg font-black text-white hover:bg-indigo-500 shadow-2xl shadow-indigo-600/30 transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="relative z-10">Apply to Contribute</span>
+                </button>
+              </section>
+            </div>
+          </ScrollReveal>
+        ) : (
+          <ScrollReveal delay={200}>
+            <div className="space-y-6">
+              {/* For ongoing projects, show status pipeline + GitHub repo */}
+              <section className={`rounded-2xl border p-8 lg:p-10 transition-all ${theme === 'dark' ? 'border-zinc-800/50 bg-black' : 'border-slate-200 bg-white shadow-sm'
+                }`}>
+                <h2 className={`mb-8 text-[10px] font-black tracking-[0.2em] uppercase ${theme === 'dark' ? 'text-slate-500' : 'text-slate-900'
+                  }`}>
+                  Development Pipeline
+                </h2>
+                <div className="flex items-center justify-between gap-8 overflow-x-auto pb-4 scrollbar-none">
+                  {PIPELINE_STEPS.map((step, index) => {
+                    const isActive = index <= activeIndex;
+                    return (
+                      <div
+                        key={step}
+                        className="flex flex-1 min-w-[100px] flex-col items-center gap-3 text-xs"
+                      >
+                        <div
+                          className={`h-2 w-full rounded-full ${index === 0 ? "bg-transparent" : (theme === 'dark' ? "bg-zinc-900" : "bg-slate-100")
+                            }`}
+                        >
+                          {index > 0 && (
+                            <div
+                              className={`h-full rounded-full transition-all duration-1000 ease-out ${index <= activeIndex
+                                ? "bg-emerald-500 shadow-[0_0_15px_rgba(52,211,153,0.3)]"
+                                : "bg-transparent"
+                                }`}
+                            />
+                          )}
+                        </div>
+                        <div
+                          className={`h-4 w-4 rounded-full border-[2.5px] transition-all duration-700 ${isActive
+                            ? "border-emerald-500 bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]"
+                            : (theme === 'dark' ? "border-zinc-800 bg-transparent" : "border-slate-300 bg-transparent")
+                            }`}
+                        />
+                        <span
+                          className={`mt-1 font-black tracking-tight transition-colors duration-300 ${isActive ? (theme === 'dark' ? "text-white" : "text-emerald-600") : "text-slate-500"
+                            }`}
+                        >
+                          {step}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+
+              {project.repoUrl && (
+                <section className={`rounded-2xl border p-8 lg:p-10 transition-all ${theme === 'dark' ? 'border-zinc-800/50 bg-black' : 'shadow-slate-200/50'
+                  }`}>
+                  <h3 className={`mb-4 text-[10px] font-black tracking-[0.2em] uppercase ${theme === 'dark' ? 'text-slate-500' : 'text-slate-900'
+                    }`}>
+                    Project Repository
+                  </h3>
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center">
+                    <div className={`flex-1 overflow-hidden rounded-xl px-5 py-4 text-xs font-mono tracking-tight ${theme === 'dark' ? 'bg-black text-indigo-400 border border-zinc-800/50' : 'bg-slate-50 text-indigo-600 border border-slate-200 shadow-inner'
+                      }`}>
+                      <span className="break-all">{project.repoUrl}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => navigator.clipboard.writeText(project.repoUrl ?? "")}
+                      className={`rounded-xl px-8 py-4 text-sm font-black transition-all duration-300 md:mt-0 ${theme === 'dark' ? 'bg-white text-black hover:bg-slate-100' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-md'
+                        } hover:scale-[1.05] active:scale-[0.98] shadow-xl shadow-white/5`}
+                    >
+                      Copy URL
+                    </button>
+                  </div>
+                </section>
+              )}
+            </div>
+          </ScrollReveal>
         )}
       </div>
       <Footer />
