@@ -12,7 +12,7 @@ export default function ProblemSolution() {
         <div className="grid md:grid-cols-2 gap-12 lg:gap-20">
           {/* The Problem Card */}
           <ScrollReveal delay={100}>
-            <div className={`h-full rounded-[2rem] p-8 lg:p-10 border transition-all duration-700 hover:scale-[1.01] ${theme === 'dark' ? 'border-zinc-800 bg-black text-white' : 'bg-white border-gray-200 shadow-lg'
+            <div className={`h-full rounded-4xl p-8 lg:p-10 border transition-all duration-700 hover:scale-[1.01] ${theme === 'dark' ? 'border-zinc-800 bg-black text-white' : 'bg-white border-gray-200 shadow-lg'
               }`}>
               <div className="flex items-center mb-8">
                 <div className="p-3.5 rounded-xl bg-red-500/10 text-red-500 mr-5 animate-pulse">
@@ -37,7 +37,7 @@ export default function ProblemSolution() {
                   "Difficulty maintaining and updating solutions"
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-4 group">
-                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-3 flex-shrink-0 group-hover:scale-150 transition-transform duration-300"></div>
+                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-3 shrink-0 group-hover:scale-150 transition-transform duration-300"></div>
                     <span className={`text-lg font-medium transition-colors group-hover:text-red-400 ${theme === 'dark' ? 'text-slate-400' : 'text-gray-600'}`}>
                       {item}
                     </span>
@@ -49,7 +49,7 @@ export default function ProblemSolution() {
 
           {/* The Solution Card */}
           <ScrollReveal delay={300}>
-            <div className={`h-full rounded-[2rem] p-8 lg:p-10 border transition-all duration-700 hover:scale-[1.01] ${theme === 'dark' ? 'border-zinc-800 bg-black text-white' : 'bg-white border-gray-200 shadow-lg'
+            <div className={`h-full rounded-4xl p-8 lg:p-10 border transition-all duration-700 hover:scale-[1.01] ${theme === 'dark' ? 'border-zinc-800 bg-black text-white' : 'bg-white border-gray-200 shadow-lg'
               }`}>
               <div className="flex items-center mb-8">
                 <div className="p-3.5 rounded-xl bg-emerald-500/10 text-emerald-500 mr-5 animate-pulse" style={{ animationDelay: '0.4s' }}>
@@ -74,7 +74,7 @@ export default function ProblemSolution() {
                   "Continuous maintenance and support"
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-4 group">
-                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-3 flex-shrink-0 group-hover:scale-150 transition-transform duration-300"></div>
+                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-3 shrink-0 group-hover:scale-150 transition-transform duration-300"></div>
                     <span className={`text-lg font-medium transition-colors group-hover:text-emerald-400 ${theme === 'dark' ? 'text-slate-400' : 'text-gray-600'}`}>
                       {item}
                     </span>

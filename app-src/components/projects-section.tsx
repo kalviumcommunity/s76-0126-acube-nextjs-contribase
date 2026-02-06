@@ -16,7 +16,7 @@ export default function ProjectsSection() {
       
       <div className="container mx-auto px-4 relative z-10">
         <h2 className="text-4xl font-bold text-white text-center mb-12 animate-fadeInUp">
-          Featured <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Projects</span>
+          Featured <span className="bg-linear-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Projects</span>
         </h2>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -26,7 +26,7 @@ export default function ProjectsSection() {
               className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20 group animate-fadeInUp"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${project.color} flex items-center justify-center mb-4 group-hover:animate-pulse`}>
+              <div className={`w-12 h-12 rounded-lg bg-linear-to-r ${project.color} flex items-center justify-center mb-4 group-hover:animate-pulse`}>
                 <span className="text-white font-bold text-lg">{project.name[0]}</span>
               </div>
               <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors">
@@ -41,7 +41,7 @@ export default function ProjectsSection() {
               </div>
               <div className="mt-4 h-1 bg-gray-700 rounded-full overflow-hidden">
                 <div 
-                  className={`h-full bg-gradient-to-r ${project.color} animate-shimmer`}
+                  className={`h-full bg-linear-to-r ${project.color} animate-shimmer`}
                   style={{ width: `${(project.stars / 1234) * 100}%` }}
                 />
               </div>
