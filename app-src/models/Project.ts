@@ -13,6 +13,7 @@ const ProjectSchema = new Schema(
     liveLink: { type: String, default: '' },
     requirements: { type: [String], default: [] },
     organization: { type: String, default: '' },
+    country: { type: String, default: '' },
     createdAt: { type: Date, default: () => new Date() },
   },
   { timestamps: true }

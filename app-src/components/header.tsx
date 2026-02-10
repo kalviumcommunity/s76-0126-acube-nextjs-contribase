@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '../contexts/theme-context';
 import { useSession, signOut } from 'next-auth/react';
+import Handshake from './handshake';
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
@@ -46,9 +47,9 @@ export default function Header() {
         {/* Logo */}
         <div className="flex items-center gap-3 shrink-0">
           <Link href="/" className="flex items-center space-x-2.5 group">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-base transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${theme === 'dark' ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'bg-slate-900 text-white shadow-lg'
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${theme === 'dark' ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'bg-slate-900 text-white shadow-lg'
               }`}>
-              C
+              <Handshake className="w-5 h-5" />
             </div>
             <span className={`text-xl font-black tracking-tighter transition-colors ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
               Contribase
@@ -61,7 +62,8 @@ export default function Header() {
           {[
             { name: 'Features', href: '/#features' },
             { name: 'How it works', href: '/#how-it-works' },
-            { name: 'Impact', href: '/#impact' }
+            { name: 'Impact', href: '/#impact' },
+            { name: 'Community', href: '/community' }
           ].map((link) => (
             <Link
               key={link.name}
@@ -74,7 +76,21 @@ export default function Header() {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
+          {/* Create Project Button */}
+          <Link
+            href="/community/create"
+            className={`hidden md:flex items-center gap-2 px-4 py-2 text-sm font-bold transition-all duration-300 rounded-xl ${theme === 'dark'
+                ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg hover:shadow-indigo-500/20'
+                : 'bg-indigo-500 hover:bg-indigo-600 text-white shadow-lg hover:shadow-xl'
+              }`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Create Project
+          </Link>
+
           <button
             onClick={toggleTheme}
             className={`relative w-12 h-6 rounded-full transition-all duration-500 focus:outline-none overflow-hidden ${theme === 'dark'

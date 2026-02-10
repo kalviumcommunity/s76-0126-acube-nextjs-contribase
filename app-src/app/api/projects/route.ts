@@ -34,6 +34,7 @@ export async function POST(req: Request) {
       liveLink: body.liveLink ?? '',
       requirements: Array.isArray(body.requirements) ? body.requirements : (body.requirements ? String(body.requirements).split(',').map((s: string) => s.trim()) : []),
       organization: body.organization ?? '',
+      country: body.country ?? '',
     };
 
     const doc = await Project.create(payload as any);
