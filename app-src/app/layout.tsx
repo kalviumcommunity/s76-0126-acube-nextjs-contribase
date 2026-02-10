@@ -6,29 +6,15 @@ import { ThemeProvider } from '../contexts/theme-context'
 import { AuthProvider } from './providers'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const geist = Geist({ subsets: ["latin"] });
+const geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'Contribase - Project Finding & Collaboration Platform',
   description: 'Discover open source projects, find ongoing collaborations, and connect with contributors. Your gateway to meaningful open source contributions.',
   generator: 'v0.app',
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/favicon.ico',
   },
 }
 
@@ -41,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`font-sans antialiased transition-colors duration-300 min-h-screen relative`}>
+      <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased transition-colors duration-300 min-h-screen relative`}>
         <AuthProvider>
           <ThemeProvider>
             <GlobalBackground />
