@@ -6,8 +6,14 @@ import { ThemeProvider } from '../contexts/theme-context'
 import { AuthProvider } from './providers'
 import './globals.css'
 
-const geist = Geist({ subsets: ["latin"] });
-const geistMono = Geist_Mono({ subsets: ["latin"] });
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans"
+});
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono"
+});
 
 export const metadata: Metadata = {
   title: 'Contribase - Project Finding & Collaboration Platform',
