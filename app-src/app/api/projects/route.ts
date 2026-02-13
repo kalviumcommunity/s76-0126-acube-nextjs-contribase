@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/route';
 import connect from '../../../lib/db';
 import Project from '../../../models/Project';
 
@@ -15,6 +17,12 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connect();
     const body = await req.json();
 
@@ -44,3 +52,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Failed to save project' }, { status: 500 });
   }
 }
+
